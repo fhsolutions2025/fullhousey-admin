@@ -4,8 +4,19 @@ import Showroom from './screens/Showroom';
 import ProfileSelect from './screens/ProfileSelect';
 import Results from './screens/Results';
 import TicketView from './screens/TicketView';
+import PrizeClaim from './screens/PrizeClaim';
+import Settings from './screens/Settings';
+import Leaderboard from './screens/Leaderboard';
 
-type Screen = 'lobby' | 'showroom' | 'profile' | 'results' | 'ticket';
+type Screen =
+  | 'lobby'
+  | 'showroom'
+  | 'profile'
+  | 'ticket'
+  | 'results'
+  | 'prize'
+  | 'settings'
+  | 'leaderboard';
 
 function App() {
   const [screen, setScreen] = React.useState<Screen>('lobby');
@@ -18,6 +29,9 @@ function App() {
         <button onClick={() => setScreen('profile')}>🧑 Profile</button>
         <button onClick={() => setScreen('ticket')}>🎫 Ticket</button>
         <button onClick={() => setScreen('results')}>🏁 Results</button>
+        <button onClick={() => setScreen('prize')}>🎉 Prize</button>
+        <button onClick={() => setScreen('settings')}>⚙️ Settings</button>
+        <button onClick={() => setScreen('leaderboard')}>🏆 Leaderboard</button>
       </header>
 
       {screen === 'lobby' && <Lobby />}
@@ -25,6 +39,9 @@ function App() {
       {screen === 'profile' && <ProfileSelect />}
       {screen === 'ticket' && <TicketView />}
       {screen === 'results' && <Results />}
+      {screen === 'prize' && <PrizeClaim />}
+      {screen === 'settings' && <Settings />}
+      {screen === 'leaderboard' && <Leaderboard />}
     </div>
   );
 }
