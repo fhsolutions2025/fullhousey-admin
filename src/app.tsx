@@ -1,49 +1,19 @@
-import React from 'react';
-import Lobby from './screens/Lobby';
-import Showroom from './screens/Showroom';
-import ProfileSelect from './screens/ProfileSelect';
-import Results from './screens/Results';
-import TicketView from './screens/TicketView';
-import PrizeClaim from './screens/PrizeClaim';
-import Settings from './screens/Settings';
-import Leaderboard from './screens/Leaderboard';
+import { useEffect, useState } from 'react'
 
-type Screen =
-  | 'lobby'
-  | 'showroom'
-  | 'profile'
-  | 'ticket'
-  | 'results'
-  | 'prize'
-  | 'settings'
-  | 'leaderboard';
+export default function App() {
+  const [status, setStatus] = useState('checking…')
 
-function App() {
-  const [screen, setScreen] = React.useState<Screen>('lobby');
+  useEffect(() => {
+    fetch('/api/health')
+      .then(r => r.json())
+      .then(d => setStatus(`${d.status} • ${d.time}`))
+      .catch(() => setStatus('backend not reachable'))
+  }, [])
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <header style={{ marginBottom: '1rem' }}>
-        <button onClick={() => setScreen('lobby')}>🏠 Lobby</button>
-        <button onClick={() => setScreen('showroom')}>🎭 Showroom</button>
-        <button onClick={() => setScreen('profile')}>🧑 Profile</button>
-        <button onClick={() => setScreen('ticket')}>🎫 Ticket</button>
-        <button onClick={() => setScreen('results')}>🏁 Results</button>
-        <button onClick={() => setScreen('prize')}>🎉 Prize</button>
-        <button onClick={() => setScreen('settings')}>⚙️ Settings</button>
-        <button onClick={() => setScreen('leaderboard')}>🏆 Leaderboard</button>
-      </header>
-
-      {screen === 'lobby' && <Lobby />}
-      {screen === 'showroom' && <Showroom />}
-      {screen === 'profile' && <ProfileSelect />}
-      {screen === 'ticket' && <TicketView />}
-      {screen === 'results' && <Results />}
-      {screen === 'prize' && <PrizeClaim />}
-      {screen === 'settings' && <Settings />}
-      {screen === 'leaderboard' && <Leaderboard />}
+    <div className="wrap">
+      <h1>FullHousey Admin</h1>
+      <p>Backend: {status}</p>
     </div>
-  );
+  )
 }
-
-export default App;
