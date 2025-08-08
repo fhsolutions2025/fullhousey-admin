@@ -1,15 +1,25 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { api } from './lib/api'
 import { ToasterProvider, useToaster } from './components/Toaster'
+import { hasToken, clearToken } from './lib/auth'
 import './styles.css'
 
 function TopNav() {
   const loc = useLocation()
+  const nav = [
+    { to: '/', label: 'Dashboard' },
+    { to: '/agents', label: 'Agents' },
+    { to: '/payments', label: 'Payments' },
+    { to: '/settings', label: 'Settings' },
+    { to: '/about', label: 'About' }
+  ]
+
   const [env, setEnv] = useState('dev')
   const [health, setHealth] = useState<'ok' | 'down' | 'checking'>('checking')
   const timer = useRef<number | null>(null)
   const { push } = useToaster()
+  const navTo = useNavigate()
 
   // Load env/config once
   useEffect(() => {
@@ -24,7 +34,7 @@ function TopNav() {
       try {
         const d = await api<any>('/api/health')
         setHealth(d?.status === 'ok' ? 'ok' : 'down')
-      } catch (e) {
+      } catch {
         setHealth('down')
       }
     }
@@ -33,13 +43,6 @@ function TopNav() {
     timer.current = window.setInterval(tick, 15000)
     return () => { if (timer.current) clearInterval(timer.current) }
   }, [])
-
-  const nav = [
-    { to: '/', label: 'Dashboard' },
-    { to: '/agents', label: 'Agents' },
-    { to: '/payments', label: 'Payments' },
-    { to: '/settings', label: 'Settings' }
-  ]
 
   return (
     <nav className="nav">
@@ -59,9 +62,17 @@ function TopNav() {
         <span className={`badge health ${health}`}>
           {health === 'checking' ? '…' : health}
         </span>
-        <button className="mini" onClick={() => push('Refreshed status')}>
-          ↻
-        </button>
+
+        {hasToken()
+          ? (
+              <button
+                className="mini"
+                onClick={() => { clearToken(); push('Logged out'); navTo('/login', { replace: true }) }}
+              >
+                Logout
+              </button>
+            )
+          : <Link to="/login" className="badge">Login</Link>}
       </div>
     </nav>
   )
