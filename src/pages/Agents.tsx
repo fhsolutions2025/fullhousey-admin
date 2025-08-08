@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
+import { useToaster } from '../components/Toaster'
 
 type AgentRow = {
   id: string
@@ -14,20 +15,20 @@ type SortKey = 'name' | 'principal' | 'status' | 'costPerHour' | 'roi'
 type SortDir = 'asc' | 'desc'
 
 export default function Agents() {
+  const { push } = useToaster()
   const [rows, setRows] = useState<AgentRow[]>([])
   const [q, setQ] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [loading, setLoading] = useState(false)
-  const [err, setErr] = useState<string | null>(null)
 
   const fetchAgents = async () => {
-    setLoading(true); setErr(null)
+    setLoading(true)
     try {
       const d = await api<ApiResp>('/api/agents')
       setRows(d.rows)
     } catch {
-      setErr('Failed to load agents')
+      push('Failed to load agents')
     } finally {
       setLoading(false)
     }
@@ -71,9 +72,8 @@ export default function Agents() {
       </div>
 
       {loading && <p>Loading…</p>}
-      {err && <p style={{ color:'#ff6b6b' }}>{err}</p>}
 
-      {!loading && !err && (
+      {!loading && (
         <div className="table-wrap">
           <table className="tbl">
             <thead>

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { api } from '../lib/api'
+import { useToaster } from '../components/Toaster'
 
 type Summary = {
   totalDeposits: number; totalPayouts: number; ngr: number;
@@ -9,22 +11,25 @@ type TrendRow = { date: string; payouts: number; deposits: number; rtp: number; 
 type DrillRow = { region: string; rtp: number; payouts: number; abnormal: boolean }
 
 export default function Payments() {
+  const { push } = useToaster()
   const [sum, setSum] = useState<Summary | null>(null)
   const [trends, setTrends] = useState<TrendRow[]>([])
   const [drill, setDrill] = useState<DrillRow[]>([])
-  const [err, setErr] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const load = async () => {
-    setErr(null)
+    setLoading(true)
     try {
       const [s, t, d] = await Promise.all([
-        fetch('/api/payments/summary').then(r => r.json()),
-        fetch('/api/payments/trends').then(r => r.json()),
-        fetch('/api/payments/drill').then(r => r.json())
+        api<Summary>('/api/payments/summary'),
+        api<{ days: string[]; rows: TrendRow[] }>('/api/payments/trends'),
+        api<{ rows: DrillRow[] }>('/api/payments/drill')
       ])
-      setSum(s); setTrends(t.rows ?? t); setDrill(d.rows ?? d)
+      setSum(s); setTrends(t.rows ?? []); setDrill(d.rows ?? [])
     } catch {
-      setErr('Failed to load payments data')
+      push('Failed to load payments data')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -33,7 +38,6 @@ export default function Payments() {
   return (
     <>
       <h1>Payments</h1>
-      {err && <p style={{color:'#ff6b6b'}}>{err}</p>}
       <div className="toolbar">
         <button onClick={load}>Refresh</button>
       </div>
@@ -41,14 +45,14 @@ export default function Payments() {
       {/* Sugar */}
       <section className="card">
         <h2>Sugar — Summary</h2>
-        {!sum ? <p>Loading…</p> : (
+        {loading && !sum ? <p>Loading…</p> : (
           <div className="grid">
-            <Metric label="Total Deposits" value={currency(sum.totalDeposits)} />
-            <Metric label="Total Payouts" value={currency(sum.totalPayouts)} />
-            <Metric label="NGR" value={currency(sum.ngr)} />
-            <Metric label="RTP Margin" value={(sum.rtpMargin*100).toFixed(1) + '%'} />
-            <Metric label="Float Buffer" value={`${sum.floatBufferDays} days`} />
-            <Metric label="Alerts" value={`${sum.abnormalRTPAlerts + sum.volatilityAlerts}`} />
+            <Metric label="Total Deposits" value={currency(sum?.totalDeposits ?? 0)} />
+            <Metric label="Total Payouts" value={currency(sum?.totalPayouts ?? 0)} />
+            <Metric label="NGR" value={currency(sum?.ngr ?? 0)} />
+            <Metric label="RTP Margin" value={sum ? (sum.rtpMargin*100).toFixed(1) + '%' : '—'} />
+            <Metric label="Float Buffer" value={sum ? `${sum.floatBufferDays} days` : '—'} />
+            <Metric label="Alerts" value={sum ? `${sum.abnormalRTPAlerts + sum.volatilityAlerts}` : '—'} />
           </div>
         )}
       </section>

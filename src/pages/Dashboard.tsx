@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
+import { useToaster } from '../components/Toaster'
 
 type J = Record<string, unknown>
 
 export default function Dashboard() {
+  const { push } = useToaster()
   const [health, setHealth] = useState('checking…')
   const [info, setInfo] = useState<J | null>(null)
   const [version, setVersion] = useState<J | null>(null)
 
-  const [loadInfo, setLoadInfo] = useState({ loading: false, error: '' })
-  const [loadVer, setLoadVer] = useState({ loading: false, error: '' })
+  const [loadInfo, setLoadInfo] = useState({ loading: false })
+  const [loadVer, setLoadVer] = useState({ loading: false })
   const [lastUpdated, setLastUpdated] = useState<string>('—')
 
   const timer = useRef<number | null>(null)
@@ -23,25 +25,26 @@ export default function Dashboard() {
         setLastUpdated(new Date().toLocaleTimeString())
       } catch {
         setHealth('backend not reachable')
+        push('Health check failed')
       }
     }
     fetchHealth()
     timer.current = window.setInterval(fetchHealth, 15000)
     return () => { if (timer.current) clearInterval(timer.current) }
-  }, [])
+  }, [push])
 
   const getInfo = async () => {
-    setLoadInfo({ loading: true, error: '' })
+    setLoadInfo({ loading: true })
     try { setInfo(await api<J>('/api/info')) }
-    catch { setLoadInfo({ loading: false, error: 'Failed to load /api/info' }); return }
-    setLoadInfo({ loading: false, error: '' })
+    catch { push('Failed to load /api/info') }
+    finally { setLoadInfo({ loading: false }) }
   }
 
   const getVersion = async () => {
-    setLoadVer({ loading: true, error: '' })
+    setLoadVer({ loading: true })
     try { setVersion(await api<J>('/api/version')) }
-    catch { setLoadVer({ loading: false, error: 'Failed to load /api/version' }); return }
-    setLoadVer({ loading: false, error: '' })
+    catch { push('Failed to load /api/version') }
+    finally { setLoadVer({ loading: false }) }
   }
 
   useEffect(() => { getInfo(); getVersion() }, [])
@@ -52,15 +55,15 @@ export default function Dashboard() {
       <p style={{opacity:.8, marginTop:-8}}>Backend: {health} • Last updated: {lastUpdated}</p>
 
       <div className="grid">
-        <Card title="Info" loading={loadInfo.loading} error={loadInfo.error} value={info} onRetry={getInfo} />
-        <Card title="Version" loading={loadVer.loading} error={loadVer.error} value={version} onRetry={getVersion} />
+        <Card title="Info" loading={loadInfo.loading} value={info} onRetry={getInfo} />
+        <Card title="Version" loading={loadVer.loading} value={version} onRetry={getVersion} />
       </div>
     </>
   )
 }
 
-function Card({ title, value, loading, error, onRetry }:{
-  title:string; value:any; loading?:boolean; error?:string; onRetry?:()=>void
+function Card({ title, value, loading, onRetry }:{
+  title:string; value:any; loading?:boolean; onRetry?:()=>void
 }) {
   return (
     <div className="card">
@@ -69,23 +72,7 @@ function Card({ title, value, loading, error, onRetry }:{
         {onRetry && <button onClick={onRetry}>↻</button>}
       </div>
       {loading && <p>Loading…</p>}
-      {!loading && error && <p style={{color:'#ff6b6b'}}>{error}</p>}
-      {!loading && !error && <pre className="stat">{JSON.stringify(value, null, 2)}</pre>}
+      {!loading && <pre className="stat">{JSON.stringify(value, null, 2)}</pre>}
     </div>
   )
-}
-import { useToaster } from '../components/Toaster'
-
-export default function Dashboard() {
-  const { push } = useToaster()
-
-  const getInfo = async () => {
-    try {
-      // ...fetch logic
-    } catch {
-      push('Failed to load /api/info')   // 👈 shows toast
-    }
-  }
-
-  // rest of component...
 }
