@@ -1,30 +1,81 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
-import './styles.css'
+import { useEffect, useRef, useState } from 'react'
+import StatCard from '../components/StatCard'
 
-export default function Layout() {
-  const loc = useLocation()
-  const nav = [
-    { to: '/', label: 'Dashboard' },
-    { to: '/agents', label: 'Agents' },
-    { to: '/payments', label: 'Payments' },
-    { to: '/settings', label: 'Settings' }
-  ]
+type J = Record<string, unknown>
+
+export default function Dashboard() {
+  const [health, setHealth] = useState('checking…')
+  const [info, setInfo] = useState<J | null>(null)
+  const [version, setVersion] = useState<J | null>(null)
+
+  const [loadInfo, setLoadInfo] = useState({ loading: false, error: '' })
+  const [loadVer, setLoadVer] = useState({ loading: false, error: '' })
+  const [lastUpdated, setLastUpdated] = useState<string>('—')
+
+  const timer = useRef<number | null>(null)
+
+  // Health auto-poll
+  useEffect(() => {
+    const fetchHealth = async () => {
+      try {
+        const r = await fetch('/api/health')
+        const d = await r.json()
+        setHealth(`${d.status} • ${d.time}`)
+        setLastUpdated(new Date().toLocaleTimeString())
+      } catch {
+        setHealth('backend not reachable')
+      }
+    }
+    fetchHealth()
+    timer.current = window.setInterval(fetchHealth, 15000) // 15s
+    return () => { if (timer.current) clearInterval(timer.current) }
+  }, [])
+
+  const getInfo = async () => {
+    setLoadInfo({ loading: true, error: '' })
+    try {
+      const r = await fetch('/api/info')
+      setInfo(await r.json())
+    } catch {
+      setLoadInfo({ loading: false, error: 'Failed to load /api/info' }); return
+    }
+    setLoadInfo({ loading: false, error: '' })
+  }
+
+  const getVersion = async () => {
+    setLoadVer({ loading: true, error: '' })
+    try {
+      const r = await fetch('/api/version')
+      setVersion(await r.json())
+    } catch {
+      setLoadVer({ loading: false, error: 'Failed to load /api/version' }); return
+    }
+    setLoadVer({ loading: false, error: '' })
+  }
+
+  useEffect(() => { getInfo(); getVersion() }, [])
+
   return (
-    <div>
-      <nav className="nav">
-        {nav.map(n => (
-          <Link
-            key={n.to}
-            to={n.to}
-            className={loc.pathname === n.to ? 'active' : ''}
-          >
-            {n.label}
-          </Link>
-        ))}
-      </nav>
-      <main className="wrap">
-        <Outlet />
-      </main>
-    </div>
+    <>
+      <h1>Dashboard</h1>
+      <p style={{opacity:.8, marginTop:-8}}>Backend: {health} • Last updated: {lastUpdated}</p>
+
+      <div className="grid">
+        <StatCard
+          title="Info"
+          loading={loadInfo.loading}
+          error={loadInfo.error}
+          value={info ? JSON.stringify(info) : undefined}
+          onRetry={getInfo}
+        />
+        <StatCard
+          title="Version"
+          loading={loadVer.loading}
+          error={loadVer.error}
+          value={version ? JSON.stringify(version) : undefined}
+          onRetry={getVersion}
+        />
+      </div>
+    </>
   )
 }

@@ -5,3 +5,10 @@ body { margin: 0; background: #0b0f14; color: #e6eef7; }
 .nav a { color: #e6eef7; text-decoration: none; padding: 6px 10px; border-radius: 6px; }
 .nav a:hover { background: #1a2333; }
 .nav a.active { background: #2b3a50; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
+.card { padding: 16px; background: #121823; border: 1px solid #1f2a3a; border-radius: 12px; }
+.card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.card h3 { margin:0; font-size:16px; opacity:.9 }
+.stat { white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+.card button { padding: 6px 10px; border: 1px solid #2a3a52; background:#182233; color:#e6eef7; border-radius:8px; cursor:pointer; }
+.card button:hover { filter: brightness(1.1); }
