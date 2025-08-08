@@ -79,3 +79,6 @@ export default function Dashboard() {
     </>
   )
 }
+import { api } from '../lib/api'
+// ...
+const r = await api<any>('/api/health')
