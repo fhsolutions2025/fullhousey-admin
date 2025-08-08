@@ -70,6 +70,16 @@ export default function Dashboard() {
     }
   }
 
+  const resetHistory = async () => {
+    try {
+      await api('/api/health/reset', { method: 'POST' })
+      push('Health history reset')
+      fetchHealth(true)
+    } catch {
+      push('Reset not available in this env')
+    }
+  }
+
   return (
     <>
       <h1>Dashboard</h1>
@@ -94,7 +104,10 @@ export default function Dashboard() {
               <span className="badge">Window {hist.uptimeWindow}%</span>
               <span className="badge">Since start {hist.uptimeSinceStart}%</span>
             </>}
-            {isDev && <button className="mini" onClick={simulateDown} title="Dev-only">Simulate Down</button>}
+            {isDev && <>
+              <button className="mini" onClick={simulateDown} title="Dev-only">Simulate Down</button>
+              <button className="mini" onClick={resetHistory} title="Dev-only">Reset</button>
+            </>}
           </div>
         </div>
 

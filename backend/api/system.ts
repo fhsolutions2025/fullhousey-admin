@@ -32,15 +32,20 @@ function recordHealth(status: HealthRow['status']) {
   totalPings++
   if (status === 'ok') okPings++
 }
-// expose for dev-only route without messy imports
+// expose for dev-only routes without messy imports
 ;(global as any).___recordHealth = recordHealth
+;(global as any).___resetHealth = () => {
+  healthHistory.splice(0, healthHistory.length)
+  totalPings = 0
+  okPings = 0
+}
 
+// helpers
 function uptimePct(rows: HealthRow[]) {
   if (!rows.length) return 0
   const ok = rows.filter(r => r.status === 'ok').length
   return Math.round((ok / rows.length) * 100)
 }
-
 function buildOutageLog(rows: HealthRow[]): Outage[] {
   const out: Outage[] = []
   let downFrom: string | null = null
@@ -50,21 +55,13 @@ function buildOutageLog(rows: HealthRow[]): Outage[] {
       downFrom = r.time
     } else if (r.status === 'ok' && downFrom) {
       const to = r.time
-      out.push({
-        from: downFrom,
-        to,
-        durationMs: new Date(to).getTime() - new Date(downFrom).getTime(),
-      })
+      out.push({ from: downFrom, to, durationMs: new Date(to).getTime() - new Date(downFrom).getTime() })
       downFrom = null
     }
   }
   if (downFrom) {
     const to = new Date().toISOString()
-    out.push({
-      from: downFrom,
-      to,
-      durationMs: new Date(to).getTime() - new Date(downFrom).getTime(),
-    })
+    out.push({ from: downFrom, to, durationMs: new Date(to).getTime() - new Date(downFrom).getTime() })
   }
   return out
 }
@@ -95,11 +92,15 @@ router.get('/health/history', (req, res) => {
   })
 })
 
-// Dev-only: simulate a DOWN ping for demos
+// Dev-only simulate & reset
 if ((process.env.NODE_ENV || 'development').toLowerCase() !== 'production') {
   router.get('/health/down', (_req, res) => {
     ;(global as any).___recordHealth?.('down')
     res.json({ status: 'down', time: new Date().toISOString() })
+  })
+  router.post('/health/reset', (_req, res) => {
+    ;(global as any).___resetHealth?.()
+    res.json({ ok: true, time: new Date().toISOString() })
   })
 }
 
