@@ -12,3 +12,13 @@ body { margin: 0; background: #0b0f14; color: #e6eef7; }
 .stat { white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
 .card button { padding: 6px 10px; border: 1px solid #2a3a52; background:#182233; color:#e6eef7; border-radius:8px; cursor:pointer; }
 .card button:hover { filter: brightness(1.1); }
+.toolbar { display:flex; gap:12px; margin:12px 0 16px; }
+.toolbar input { flex:1; padding:8px 10px; border-radius:8px; border:1px solid #2a3a52; background:#0e1420; color:#e6eef7; }
+.toolbar button { padding: 8px 12px; border: 1px solid #2a3a52; background:#182233; color:#e6eef7; border-radius:8px; cursor:pointer; }
+.toolbar button:hover { filter: brightness(1.1); }
+
+.table-wrap { overflow:auto; border:1px solid #1f2a3a; border-radius:12px; }
+.tbl { width:100%; border-collapse: collapse; }
+.tbl th, .tbl td { padding:12px; border-bottom:1px solid #1f2a3a; text-align:left; }
+.tbl th { background:#121823; cursor:pointer; user-select:none; }
+.tbl tr:hover td { background:#111726; }
