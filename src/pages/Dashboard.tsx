@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import StatCard from '../components/StatCard'
+import { api } from '../lib/api'
 
 type J = Record<string, unknown>
 
@@ -18,8 +18,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchHealth = async () => {
       try {
-        const r = await fetch('/api/health')
-        const d = await r.json()
+        const d = await api<any>('/api/health')
         setHealth(`${d.status} • ${d.time}`)
         setLastUpdated(new Date().toLocaleTimeString())
       } catch {
@@ -27,29 +26,21 @@ export default function Dashboard() {
       }
     }
     fetchHealth()
-    timer.current = window.setInterval(fetchHealth, 15000) // 15s
+    timer.current = window.setInterval(fetchHealth, 15000)
     return () => { if (timer.current) clearInterval(timer.current) }
   }, [])
 
   const getInfo = async () => {
     setLoadInfo({ loading: true, error: '' })
-    try {
-      const r = await fetch('/api/info')
-      setInfo(await r.json())
-    } catch {
-      setLoadInfo({ loading: false, error: 'Failed to load /api/info' }); return
-    }
+    try { setInfo(await api<J>('/api/info')) }
+    catch { setLoadInfo({ loading: false, error: 'Failed to load /api/info' }); return }
     setLoadInfo({ loading: false, error: '' })
   }
 
   const getVersion = async () => {
     setLoadVer({ loading: true, error: '' })
-    try {
-      const r = await fetch('/api/version')
-      setVersion(await r.json())
-    } catch {
-      setLoadVer({ loading: false, error: 'Failed to load /api/version' }); return
-    }
+    try { setVersion(await api<J>('/api/version')) }
+    catch { setLoadVer({ loading: false, error: 'Failed to load /api/version' }); return }
     setLoadVer({ loading: false, error: '' })
   }
 
@@ -61,24 +52,40 @@ export default function Dashboard() {
       <p style={{opacity:.8, marginTop:-8}}>Backend: {health} • Last updated: {lastUpdated}</p>
 
       <div className="grid">
-        <StatCard
-          title="Info"
-          loading={loadInfo.loading}
-          error={loadInfo.error}
-          value={info ? JSON.stringify(info) : undefined}
-          onRetry={getInfo}
-        />
-        <StatCard
-          title="Version"
-          loading={loadVer.loading}
-          error={loadVer.error}
-          value={version ? JSON.stringify(version) : undefined}
-          onRetry={getVersion}
-        />
+        <Card title="Info" loading={loadInfo.loading} error={loadInfo.error} value={info} onRetry={getInfo} />
+        <Card title="Version" loading={loadVer.loading} error={loadVer.error} value={version} onRetry={getVersion} />
       </div>
     </>
   )
 }
-import { api } from '../lib/api'
-// ...
-const r = await api<any>('/api/health')
+
+function Card({ title, value, loading, error, onRetry }:{
+  title:string; value:any; loading?:boolean; error?:string; onRetry?:()=>void
+}) {
+  return (
+    <div className="card">
+      <div className="card-top">
+        <h3>{title}</h3>
+        {onRetry && <button onClick={onRetry}>↻</button>}
+      </div>
+      {loading && <p>Loading…</p>}
+      {!loading && error && <p style={{color:'#ff6b6b'}}>{error}</p>}
+      {!loading && !error && <pre className="stat">{JSON.stringify(value, null, 2)}</pre>}
+    </div>
+  )
+}
+import { useToaster } from '../components/Toaster'
+
+export default function Dashboard() {
+  const { push } = useToaster()
+
+  const getInfo = async () => {
+    try {
+      // ...fetch logic
+    } catch {
+      push('Failed to load /api/info')   // 👈 shows toast
+    }
+  }
+
+  // rest of component...
+}
