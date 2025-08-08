@@ -1,15 +1,17 @@
-import express from 'express'
-import cors from 'cors'
+// --- add below your existing /api/health route ---
 
-const app = express()
-app.use(cors())
-app.use(express.json())
-
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', time: new Date().toISOString() })
+app.get('/api/info', (_req, res) => {
+  res.json({
+    app: 'FullHousey Admin',
+    env: process.env.NODE_ENV || 'development',
+    time: new Date().toISOString()
+  })
 })
 
-const PORT = process.env.PORT || 4000
-app.listen(PORT, () => {
-  console.log(`Backend running at http://localhost:${PORT}`)
+app.get('/api/version', (_req, res) => {
+  res.json({
+    frontend: '0.1.0',
+    backend: '0.1.0',
+    commit: process.env.GIT_COMMIT || 'local-dev'
+  })
 })
