@@ -61,3 +61,11 @@ select { padding:6px 10px; border-radius:8px; border:1px solid #2a3a52; backgrou
   background: #0e1420;
   color: #e6eef7;
 }
+input[type="text"], input[type="password"], input:not([type]) {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #2a3a52;
+  background: #0e1420;
+  color: #e6eef7;
+}
