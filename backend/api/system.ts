@@ -1,13 +1,9 @@
-/* sparkline block */
-.sparkline { display:flex; flex-direction:column; gap:8px; }
-.spark-meta { display:flex; gap:8px; align-items:center; }
-.badge { font-size: 12px; padding: 4px 8px; border-radius: 999px; border:1px solid #2a3a52; background:#182233; }
 import { Router } from 'express'
 import { execSync } from 'node:child_process'
 
 const router = Router()
 
-// ─── Build/Commit helpers ─────────────────────────────────────────────────────
+// ── Build/Commit helpers ──────────────────────────────────────────────────────
 function getCommit(): string {
   try {
     return process.env.GIT_COMMIT || execSync('git rev-parse --short HEAD').toString().trim()
@@ -19,7 +15,7 @@ function getBuildTime(): string {
   return process.env.BUILD_TIME || new Date().toISOString()
 }
 
-// ─── Health history (in-memory ring buffer) ───────────────────────────────────
+// ── Health history (in-memory ring buffer) ────────────────────────────────────
 type HealthRow = { time: string; status: 'ok' | 'down' }
 type Outage = { from: string; to: string; durationMs: number }
 
@@ -36,6 +32,8 @@ function recordHealth(status: HealthRow['status']) {
   totalPings++
   if (status === 'ok') okPings++
 }
+// expose for dev-only route without messy imports
+;(global as any).___recordHealth = recordHealth
 
 function uptimePct(rows: HealthRow[]) {
   if (!rows.length) return 0
@@ -52,28 +50,33 @@ function buildOutageLog(rows: HealthRow[]): Outage[] {
       downFrom = r.time
     } else if (r.status === 'ok' && downFrom) {
       const to = r.time
-      out.push({ from: downFrom, to, durationMs: new Date(to).getTime() - new Date(downFrom).getTime() })
+      out.push({
+        from: downFrom,
+        to,
+        durationMs: new Date(to).getTime() - new Date(downFrom).getTime(),
+      })
       downFrom = null
     }
   }
   if (downFrom) {
     const to = new Date().toISOString()
-    out.push({ from: downFrom, to, durationMs: new Date(to).getTime() - new Date(downFrom).getTime() })
+    out.push({
+      from: downFrom,
+      to,
+      durationMs: new Date(to).getTime() - new Date(downFrom).getTime(),
+    })
   }
   return out
 }
 
-// background self-tick (server alive = ok). Still also recorded on /health hits.
+// background self-tick (server alive = ok)
 setInterval(() => recordHealth('ok'), 30_000)
 
-// ─── Routes ───────────────────────────────────────────────────────────────────
+// ── Routes ────────────────────────────────────────────────────────────────────
 router.get('/health', (_req, res) => {
   recordHealth('ok')
   res.json({ status: 'ok', time: new Date().toISOString() })
 })
-
-// Optional test route to simulate a down ping (use sparingly in dev):
-// router.get('/health/down', (_req, res) => { recordHealth('down'); res.json({status:'down'}) })
 
 router.get('/health/history', (req, res) => {
   const limitRaw = String(req.query.limit ?? '')
@@ -88,15 +91,23 @@ router.get('/health/history', (req, res) => {
     startedAt: STARTED_AT,
     uptimeWindow: uptimePct(rows),
     uptimeSinceStart: totalPings ? Math.round((okPings / totalPings) * 100) : 0,
-    outageLog: buildOutageLog(rows) // last N only (keeps payload small)
+    outageLog: buildOutageLog(rows),
   })
 })
+
+// Dev-only: simulate a DOWN ping for demos
+if ((process.env.NODE_ENV || 'development').toLowerCase() !== 'production') {
+  router.get('/health/down', (_req, res) => {
+    ;(global as any).___recordHealth?.('down')
+    res.json({ status: 'down', time: new Date().toISOString() })
+  })
+}
 
 router.get('/info', (_req, res) =>
   res.json({
     app: 'FullHousey Admin',
     env: process.env.NODE_ENV || 'development',
-    time: new Date().toISOString()
+    time: new Date().toISOString(),
   })
 )
 
@@ -104,7 +115,7 @@ router.get('/version', (_req, res) =>
   res.json({
     frontend: '0.1.0',
     backend: '0.1.0',
-    commit: getCommit()
+    commit: getCommit(),
   })
 )
 
@@ -113,7 +124,7 @@ router.get('/config', (_req, res) =>
     env: process.env.NODE_ENV || 'development',
     apiBase: process.env.API_BASE || '/api',
     buildTime: getBuildTime(),
-    commit: getCommit()
+    commit: getCommit(),
   })
 )
 
