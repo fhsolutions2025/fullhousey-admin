@@ -48,3 +48,7 @@ button.mini:hover { filter: brightness(1.1); }
 /* toaster */
 .toasts { position: fixed; right: 16px; bottom: 16px; display:flex; flex-direction:column; gap:8px; z-index: 9999; }
 .toast { background:#121823; color:#e6eef7; border:1px solid #2a3a52; padding:10px 12px; border-radius:10px; min-width: 240px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+/* sparkline block */
+.sparkline { display:flex; flex-direction:column; gap:8px; }
+.spark-meta { display:flex; gap:8px; align-items:center; }
+.badge { font-size: 12px; padding: 4px 8px; border-radius: 999px; border:1px solid #2a3a52; background:#182233; }
