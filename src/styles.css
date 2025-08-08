@@ -1,3 +1,7 @@
 :root { font-family: Inter, system-ui, sans-serif; }
 body { margin: 0; background: #0b0f14; color: #e6eef7; }
 .wrap { max-width: 960px; margin: 40px auto; padding: 0 16px; }
+.nav { background: #121823; padding: 8px 16px; display: flex; gap: 16px; }
+.nav a { color: #e6eef7; text-decoration: none; padding: 6px 10px; border-radius: 6px; }
+.nav a:hover { background: #1a2333; }
+.nav a.active { background: #2b3a50; }
