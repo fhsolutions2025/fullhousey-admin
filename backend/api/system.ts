@@ -14,6 +14,29 @@ function getCommit(): string {
 function getBuildTime(): string {
   return process.env.BUILD_TIME || new Date().toISOString()
 }
+const ENV = (process.env.NODE_ENV || 'development').toLowerCase()
+
+// ── Config (runtime, non-secret; in-memory for now) ───────────────────────────
+type RuntimeConfig = {
+  env: string
+  apiBase: string
+  buildTime: string
+  commit: string
+  // editable fields (dev/staging only for now)
+  pingIntervalMs: number
+  enableDevTools: boolean
+  theme: 'dark' | 'light'
+}
+
+const RUNTIME_CONFIG: RuntimeConfig = {
+  env: ENV,
+  apiBase: process.env.API_BASE || '/api',
+  buildTime: getBuildTime(),
+  commit: getCommit(),
+  pingIntervalMs: 15000,
+  enableDevTools: ENV !== 'production',
+  theme: 'dark'
+}
 
 // ── Health history (in-memory ring buffer) ────────────────────────────────────
 type HealthRow = { time: string; status: 'ok' | 'down' }
@@ -93,7 +116,7 @@ router.get('/health/history', (req, res) => {
 })
 
 // Dev-only simulate & reset
-if ((process.env.NODE_ENV || 'development').toLowerCase() !== 'production') {
+if (ENV !== 'production') {
   router.get('/health/down', (_req, res) => {
     ;(global as any).___recordHealth?.('down')
     res.json({ status: 'down', time: new Date().toISOString() })
@@ -104,29 +127,47 @@ if ((process.env.NODE_ENV || 'development').toLowerCase() !== 'production') {
   })
 }
 
+// Info/Version
 router.get('/info', (_req, res) =>
   res.json({
     app: 'FullHousey Admin',
-    env: process.env.NODE_ENV || 'development',
+    env: RUNTIME_CONFIG.env,
     time: new Date().toISOString(),
   })
 )
-
 router.get('/version', (_req, res) =>
   res.json({
     frontend: '0.1.0',
     backend: '0.1.0',
-    commit: getCommit(),
+    commit: RUNTIME_CONFIG.commit,
   })
 )
 
-router.get('/config', (_req, res) =>
-  res.json({
-    env: process.env.NODE_ENV || 'development',
-    apiBase: process.env.API_BASE || '/api',
-    buildTime: getBuildTime(),
-    commit: getCommit(),
-  })
-)
+// Config (GET always, POST only non-prod)
+router.get('/config', (_req, res) => res.json(RUNTIME_CONFIG))
+
+router.post('/config', (req, res) => {
+  if (ENV === 'production') {
+    return res.status(403).json({ error: 'Config updates disabled in production' })
+  }
+  // basic parse
+  const body: Partial<RuntimeConfig> = req.body || {}
+  if (typeof body.pingIntervalMs === 'number' && body.pingIntervalMs >= 5000 && body.pingIntervalMs <= 60000) {
+    RUNTIME_CONFIG.pingIntervalMs = Math.floor(body.pingIntervalMs)
+  }
+  if (typeof body.enableDevTools === 'boolean') {
+    RUNTIME_CONFIG.enableDevTools = body.enableDevTools
+  }
+  if (body.theme === 'dark' || body.theme === 'light') {
+    RUNTIME_CONFIG.theme = body.theme
+  }
+  // immutable fields echoed but not overwritten here:
+  RUNTIME_CONFIG.env = ENV
+  RUNTIME_CONFIG.apiBase = RUNTIME_CONFIG.apiBase
+  RUNTIME_CONFIG.buildTime = RUNTIME_CONFIG.buildTime
+  RUNTIME_CONFIG.commit = RUNTIME_CONFIG.commit
+
+  res.json(RUNTIME_CONFIG)
+})
 
 export default router

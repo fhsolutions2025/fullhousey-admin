@@ -53,3 +53,11 @@ button.mini:hover { filter: brightness(1.1); }
 .spark-meta { display:flex; gap:8px; align-items:center; }
 .badge { font-size: 12px; padding: 4px 8px; border-radius: 999px; border:1px solid #2a3a52; background:#182233; }
 select { padding:6px 10px; border-radius:8px; border:1px solid #2a3a52; background:#0e1420; color:#e6eef7; }
+.metric input[type="number"], .metric select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #2a3a52;
+  background: #0e1420;
+  color: #e6eef7;
+}
