@@ -1,0 +1,33 @@
+{
+  "schema": "fhs.images.v1",
+  "banners": [
+    {
+      "name": "banner-app-hero",
+      "desktop": "banner-app-hero-desktop.webp",
+      "mobile": "banner-app-hero-mobile.webp",
+      "alt": "FullHousey Admin — Control Room • Agent Mode • Reports",
+      "usage": "Hero banner"
+    },
+    {
+      "name": "banner-cc-cockpit",
+      "desktop": "banner-cc-cockpit-desktop.webp",
+      "mobile": "banner-cc-cockpit-mobile.webp",
+      "alt": "Command Center — Executive Overview • Risk • Finance",
+      "usage": "Hero banner"
+    },
+    {
+      "name": "banner-reports-vault",
+      "desktop": "banner-reports-vault-desktop.webp",
+      "mobile": "banner-reports-vault-mobile.webp",
+      "alt": "Reports Vault — Daily Snapshots • MIS • Archive",
+      "usage": "Hero banner"
+    },
+    {
+      "name": "banner-hod-generic",
+      "desktop": "banner-hod-generic-desktop.webp",
+      "mobile": "banner-hod-generic-mobile.webp",
+      "alt": "HOD Console — CFO • CMO • Content • Risk • Data • Infra",
+      "usage": "Hero banner"
+    }
+  ]
+}

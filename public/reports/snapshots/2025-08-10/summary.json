@@ -1,0 +1,30 @@
+{
+  "schema": "fhs.report.summary.v1",
+  "generated_at_ist": "2025-08-10 12:00:00",
+  "kpis": {
+    "active_shows": 1,
+    "concurrency": 0,
+    "tickets_per_min": 0,
+    "ftds_today": 0,
+    "ngr_today": 0,
+    "rtp_alerts": 0,
+    "failed_payments": 0,
+    "error_rate": 0,
+    "digi_salary_burn": 0,
+    "bonus_burn": 0
+  },
+  "hod": {
+    "cfo": {"ngr": 0, "liquidity": "n/a"},
+    "cmo": {"cpa": "n/a", "cost_per_ftd": "n/a"},
+    "content": {"shows_on_air": ["Ludo"]},
+    "risk": {"alerts": []},
+    "affiliates": {"live_campaigns": 0},
+    "data": {"profiles_seen": {"Relaxed": 0, "Main Acts": 0, "Gamesey": 0, "BIG Wins": 0}},
+    "infra": {"uptime_24h": "n/a"}
+  },
+  "links": {
+    "mis_master": "/reports/snapshots/2025-08-10/mis.xlsx",
+    "pdf_snapshot": "/reports/snapshots/2025-08-10/executive_summary.pdf"
+  },
+  "audit": {"version": "v1", "notes": "seed"}
+}

@@ -1,15 +1,16 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense } from "react";
-import Layout from "./Layout";
+import Layout from "./layout";
 import AgentConsole from "./pages/AgentConsole";
+import Reports from "./pages/Reports";
 
-// Inline light fallback components to avoid extra imports
+// Minimal splash so the app renders even before other pages are ready
 function Splash() {
   return (
     <div style={{ padding: 24 }}>
       <h2 style={{ margin: 0 }}>FullHousey Admin</h2>
       <p style={{ color: "#6b7280" }}>
-        App is up. Visit <code>/agent-console</code> for the Agent Mode snapshot.
+        App is up. Open <code>/agent-console</code> or <code>/reports</code>.
       </p>
     </div>
   );
@@ -20,7 +21,7 @@ function NotFound() {
     <div style={{ padding: 24 }}>
       <h2 style={{ margin: 0 }}>404</h2>
       <p style={{ color: "#ef4444" }}>This route doesn’t exist.</p>
-      <a href="/agent-console">Go to Agent Console</a>
+      <a href="/reports">Go to Reports</a>
     </div>
   );
 }
@@ -31,13 +32,16 @@ export default function AppRouter() {
       <Layout>
         <Suspense fallback={<div style={{ padding: 24 }}>Loading…</div>}>
           <Routes>
-            {/* Index — keep neutral. If you already have a Home route elsewhere, change this to Navigate to it. */}
+            {/* Home — change to Navigate to "/reports" if you want reports as the landing page */}
             <Route index element={<Splash />} />
 
-            {/* New: Agent Mode read-only config snapshot */}
+            {/* Agent Mode read-only config snapshot */}
             <Route path="/agent-console" element={<AgentConsole />} />
 
-            {/* Optional: convenience redirects */}
+            {/* Reports vault (daily snapshots) */}
+            <Route path="/reports" element={<Reports />} />
+
+            {/* Convenience redirects */}
             <Route path="/console" element={<Navigate to="/agent-console" replace />} />
             <Route path="/agents" element={<Navigate to="/agent-console" replace />} />
 
