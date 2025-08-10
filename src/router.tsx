@@ -1,36 +1,51 @@
-import { createBrowserRouter } from 'react-router-dom'
-import Layout from './Layout'
-import Dashboard from './pages/Dashboard'
-import Agents from './pages/Agents'
-import Payments from './pages/Payments'
-import Settings from './pages/Settings'
-import About from './pages/About'
-import Login from './pages/Login'
-import Guard from './components/Guard'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Suspense } from "react";
+import Layout from "./Layout";
+import AgentConsole from "./pages/AgentConsole";
 
-export const router = createBrowserRouter([
-  // Public
-  { path: '/login', element: <Login /> },
+// Inline light fallback components to avoid extra imports
+function Splash() {
+  return (
+    <div style={{ padding: 24 }}>
+      <h2 style={{ margin: 0 }}>FullHousey Admin</h2>
+      <p style={{ color: "#6b7280" }}>
+        App is up. Visit <code>/agent-console</code> for the Agent Mode snapshot.
+      </p>
+    </div>
+  );
+}
 
-  // App shell
-  {
-    path: '/',
-    element: <Layout />,
-    children: [
-      { index: true, element: <Dashboard /> },
+function NotFound() {
+  return (
+    <div style={{ padding: 24 }}>
+      <h2 style={{ margin: 0 }}>404</h2>
+      <p style={{ color: "#ef4444" }}>This route doesn’t exist.</p>
+      <a href="/agent-console">Go to Agent Console</a>
+    </div>
+  );
+}
 
-      // Protected group
-      {
-        element: <Guard />,
-        children: [
-          { path: 'agents', element: <Agents /> },
-          { path: 'payments', element: <Payments /> },
-          { path: 'settings', element: <Settings /> }
-        ]
-      },
+export default function AppRouter() {
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Suspense fallback={<div style={{ padding: 24 }}>Loading…</div>}>
+          <Routes>
+            {/* Index — keep neutral. If you already have a Home route elsewhere, change this to Navigate to it. */}
+            <Route index element={<Splash />} />
 
-      // Public info page
-      { path: 'about', element: <About /> }
-    ]
-  }
-])
+            {/* New: Agent Mode read-only config snapshot */}
+            <Route path="/agent-console" element={<AgentConsole />} />
+
+            {/* Optional: convenience redirects */}
+            <Route path="/console" element={<Navigate to="/agent-console" replace />} />
+            <Route path="/agents" element={<Navigate to="/agent-console" replace />} />
+
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </Layout>
+    </BrowserRouter>
+  );
+}

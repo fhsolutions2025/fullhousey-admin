@@ -1,122 +1,87 @@
-import { useEffect, useMemo, useState } from 'react'
-import { api } from '../lib/api'
-import { useToaster } from '../components/Toaster'
+// src/pages/AgentConsole.tsx
+import { useEffect, useState } from "react";
+import {
+  AgentsRegistry, AgentPolicy, GTMSchema, ObserversCfg, SegMintProfiles,
+  ImpactRules, CCIPMap, SchedulerCfg, BARCSettings, LudoShow, AgentKPIs
+} from "../lib/agentConfig";
 
-type AgentRow = {
-  id: string
-  name: string
-  principal: string
-  status: 'online' | 'idle' | 'error'
-  costPerHour: number
-  roi: number
-}
-type ApiResp = { rows: AgentRow[]; count: number; time: string }
-type SortKey = 'name' | 'principal' | 'status' | 'costPerHour' | 'roi'
-type SortDir = 'asc' | 'desc'
+type LoadItem = { name: string; loader: () => Promise<any> };
 
-export default function Agents() {
-  const { push } = useToaster()
-  const [rows, setRows] = useState<AgentRow[]>([])
-  const [q, setQ] = useState('')
-  const [sortKey, setSortKey] = useState<SortKey>('name')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const [loading, setLoading] = useState(false)
+const ITEMS: LoadItem[] = [
+  { name: "agents.registry", loader: AgentsRegistry },
+  { name: "agent.policy", loader: AgentPolicy },
+  { name: "gtm.bridge.schema", loader: GTMSchema },
+  { name: "observers.config", loader: ObserversCfg },
+  { name: "segmint.profiles", loader: SegMintProfiles },
+  { name: "impact.rules", loader: ImpactRules },
+  { name: "cc.ipmap", loader: CCIPMap },
+  { name: "scheduler", loader: SchedulerCfg },
+  { name: "barc.settings", loader: BARCSettings },
+  { name: "shows.ludo", loader: LudoShow },
+  { name: "agent.kpis.schema", loader: AgentKPIs }
+];
 
-  const fetchAgents = async () => {
-    setLoading(true)
-    try {
-      const d = await api<ApiResp>('/api/agents')
-      setRows(d.rows)
-    } catch {
-      push('Failed to load agents')
-    } finally {
-      setLoading(false)
-    }
-  }
+export default function AgentConsole() {
+  const [data, setData] = useState<Record<string, any>>({});
+  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { fetchAgents() }, [])
+  useEffect(() => {
+    (async () => {
+      try {
+        const entries = await Promise.all(
+          ITEMS.map(async (it) => [it.name, await it.loader()] as const)
+        );
+        setData(Object.fromEntries(entries));
+      } catch (e: any) {
+        setErr(e?.message || "Failed to load one or more configs");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-  const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase()
-    let out = rows
-    if (needle) {
-      out = out.filter(r =>
-        [r.id, r.name, r.principal, r.status].some(v => String(v).toLowerCase().includes(needle))
-      )
-    }
-    out = [...out].sort((a, b) => {
-      const va = a[sortKey] as any; const vb = b[sortKey] as any
-      if (va < vb) return sortDir === 'asc' ? -1 : 1
-      if (va > vb) return sortDir === 'asc' ? 1 : -1
-      return 0
-    })
-    return out
-  }, [rows, q, sortKey, sortDir])
-
-  const header = (key: SortKey, label: string) => (
-    <th onClick={() => {
-      if (sortKey === key) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
-      else { setSortKey(key); setSortDir('asc') }
+  const Card = ({ title, body }: { title: string; body: any }) => (
+    <div style={{
+      border: "1px solid #e5e7eb",
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      boxShadow: "0 1px 2px rgba(0,0,0,0.04)"
     }}>
-      {label}{' '}
-      <span style={{ opacity: .6 }}>{sortKey === key ? (sortDir === 'asc' ? '▲' : '▼') : ''}</span>
-    </th>
-  )
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h3 style={{ margin: 0, fontSize: 16 }}>{title}</h3>
+        <span title="loaded" style={{ fontSize: 12 }}>✅</span>
+      </div>
+      <pre style={{
+        background: "#0b1220",
+        color: "#d1e3ff",
+        padding: 12,
+        borderRadius: 8,
+        marginTop: 12,
+        overflowX: "auto",
+        fontSize: 12
+      }}>{JSON.stringify(body, null, 2)}</pre>
+    </div>
+  );
 
   return (
-    <>
-      <h1>Agents</h1>
-      <div className="toolbar">
-        <input placeholder="Search agents…" value={q} onChange={e => setQ(e.target.value)} />
-        <button onClick={fetchAgents}>Refresh</button>
-      </div>
+    <div style={{ maxWidth: 1040, margin: "24px auto", padding: "0 16px" }}>
+      <h1 style={{ fontSize: 22, marginBottom: 12 }}>Agent Console — Config Snapshot</h1>
+      <p style={{ color: "#6b7280", marginTop: 0 }}>
+        Read-only view of the 11 Agent Mode configs served from <code>/public/agent-config/</code>.
+      </p>
 
       {loading && <p>Loading…</p>}
+      {err && <p style={{ color: "#ef4444" }}>{err}</p>}
 
-      {!loading && (
-        <div className="table-wrap">
-          <table className="tbl">
-            <thead>
-              <tr>
-                {header('name','Name')}
-                {header('principal','Principal')}
-                {header('status','Status')}
-                {header('costPerHour','Cost/hr')}
-                {header('roi','ROI')}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(r => (
-                <tr key={r.id}>
-                  <td>{r.name}</td>
-                  <td>{r.principal}</td>
-                  <td><Badge status={r.status} /></td>
-                  <td>₹{r.costPerHour.toFixed(0)}</td>
-                  <td>{Math.round(r.roi*100)}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {!filtered.length && <p style={{opacity:.7}}>No matching agents.</p>}
-        </div>
+      {!loading && !err && (
+        <>
+          {Object.entries(data).map(([k, v]) => (
+            <Card key={k} title={k} body={v} />
+          ))}
+        </>
       )}
-    </>
-  )
-}
-
-function Badge({ status }: { status: AgentRow['status'] }) {
-  const color =
-    status === 'online' ? '#2ecc71' :
-    status === 'idle' ? '#f1c40f' : '#e74c3c'
-  return (
-    <span style={{
-      background: '#182233',
-      border: '1px solid #2a3a52',
-      borderLeft: `6px solid ${color}`,
-      padding: '4px 8px',
-      borderRadius: 6
-    }}>
-      {status}
-    </span>
-  )
+    </div>
+  );
 }
