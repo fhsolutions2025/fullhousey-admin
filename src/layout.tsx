@@ -5,8 +5,8 @@ export function Layout({
   onNavigate,
   children
 }: {
-  current: 'profile' | 'tezz' | 'saanp' | 'dashboard' | 'account' | 'tickets',
-  onNavigate: (p: 'profile' | 'tezz' | 'saanp' | 'dashboard' | 'account' | 'tickets') => void,
+  current: 'profile' | 'tezz' | 'saanp' | 'dashboard' | 'tickets' | 'account' | 'cc' | 'cto' | 'content',
+  onNavigate: (p: 'profile' | 'tezz' | 'saanp' | 'dashboard' | 'tickets' | 'account' | 'cc' | 'cto' | 'content') => void,
   children: React.ReactNode
 }) {
   const Btn = ({ id, label }: { id: typeof current; label: string }) => (
@@ -19,13 +19,16 @@ export function Layout({
           <img src="/img/logo-placeholder.svg" alt="FullHousey" />
           <span>FullHousey Admin</span>
         </div>
-        <nav className="nav">
+        <nav className="nav" style={{ flexWrap:'wrap' }}>
           <Btn id="profile" label="Profile" />
-          <Btn id="tezz" label="Tezz Home" />
-          <Btn id="saanp" label="Saanp Seedhi" />
-          <Btn id="dashboard" label="Dashboard" />
+          <Btn id="tezz" label="Tezz" />
+          <Btn id="saanp" label="Saanp" />
+          <Btn id="dashboard" label="Ops Dash" />
           <Btn id="tickets" label="Tickets" />
           <Btn id="account" label="My Account" />
+          <Btn id="cc" label="CC" />
+          <Btn id="cto" label="CTO" />
+          <Btn id="content" label="Content HoD" />
         </nav>
       </header>
       <main className="app-main">

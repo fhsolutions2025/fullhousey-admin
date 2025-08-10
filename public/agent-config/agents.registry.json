@@ -1,0 +1,18 @@
+{
+  "agents.registry.v1": {
+    "principal": {
+      "RonBot": {"dept":"CMO","scope":["promo","budget","sim"]},
+      "RiskEye": {"dept":"CRO","scope":["fraud","rtp","alerts"]},
+      "Natasha": {"dept":"Content","scope":["copy","voice","xray"]},
+      "SegMint": {"dept":"Data","scope":["profiles","memory","traits"]},
+      "Scopi": {"dept":"Affiliates","scope":["scout","outreach","dealdesk"]},
+      "ImpactWhat": {"dept":"Impact","scope":["simulate","warn","log"]},
+      "PRISM": {"dept":"Payouts","scope":["prize","fairness"]},
+      "PromoCraft": {"dept":"Marketing","scope":["journeys","offers"]},
+      "CFO_Pastry": {"dept":"Finance","scope":["costs","volatility","roi"]},
+      "InfraWatch": {"dept":"SRE","scope":["uptime","latency","ip_map"]}
+    },
+    "showagents": ["Riya","Dhruv","Anjali","Avi","Rani"],
+    "fallbacks": ["Kamleshbhai","Mummysee","JJ"]
+  }
+}

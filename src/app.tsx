@@ -6,8 +6,14 @@ import SaanpSeedhi from './pages/SaanpSeedhi'
 import Dashboard from './pages/Dashboard'
 import MyAccount from './pages/MyAccount'
 import Tickets from './pages/Tickets'
+import CCDashboard from './pages/CCDashboard'
+import CTODashboard from './pages/CTODashboard'
+import ContentHoDDashboard from './pages/ContentHoDDashboard'
 
-type PageKey = 'profile' | 'tezz' | 'saanp' | 'dashboard' | 'account' | 'tickets'
+type PageKey =
+  | 'profile' | 'tezz' | 'saanp' | 'dashboard'
+  | 'tickets' | 'account'
+  | 'cc' | 'cto' | 'content'
 
 export default function App() {
   const [page, setPage] = useState<PageKey>('profile')
@@ -18,8 +24,11 @@ export default function App() {
       {page === 'tezz' && <TezzHome />}
       {page === 'saanp' && <SaanpSeedhi />}
       {page === 'dashboard' && <Dashboard />}
-      {page === 'account' && <MyAccount />}
       {page === 'tickets' && <Tickets />}
+      {page === 'account' && <MyAccount />}
+      {page === 'cc' && <CCDashboard />}
+      {page === 'cto' && <CTODashboard />}
+      {page === 'content' && <ContentHoDDashboard />}
     </Layout>
   )
 }

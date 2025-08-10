@@ -1,0 +1,24 @@
+{
+  "impact.rules.v1": [
+    {
+      "when":{"module":"RTP","change_pct":{">=":2}},
+      "effect":{"risk":"amber","predictions":{"churn_pct":"+3-7","ngr_pct":"-1-3"}},
+      "advice":["Stagger rollout 10% traffic","Enable RiskEye watchlist","Notify CFO_Pastry"]
+    },
+    {
+      "when":{"module":"HostSwap","show":"Ludo","from":"Dhruv","to":"Rani","day_in":["Sat","Sun"]},
+      "effect":{"risk":"green","predictions":{"engagement_idx":"+5-10"}},
+      "advice":["Run 2-night A/B","Boost social promos via Natasha"]
+    },
+    {
+      "when":{"module":"Bonus","burn_pct":{">=":10}},
+      "effect":{"risk":"amber","predictions":{"cashflow_stress":"med"}},
+      "advice":["Tighten PRISM tiers","Auto-cap for Relaxed profile"]
+    },
+    {
+      "when":{"module":"FallbackUsage","pct":{">=":30}},
+      "effect":{"risk":"red","predictions":{"voice_quality":"drop","cost":"+15%"}},
+      "advice":["Trigger Sick-Leave badge","Rotate to primary host"]
+    }
+  ]
+}

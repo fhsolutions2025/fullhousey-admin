@@ -1,34 +1,69 @@
-import React from 'react'
-
-const cards = [
-  { key: 'Relaxed', tagline: 'Play easy, win breezy!', img: '/img/profile-relaxed.svg' },
-  { key: 'Main Acts', tagline: 'Every round’s a performance!', img: '/img/profile-mainacts.svg' },
-  { key: 'Gamesey', tagline: 'Win with wits, not just luck.', img: '/img/profile-gamesey.svg' },
-  { key: 'BIG Wins', tagline: 'Big risk. Bigger rewards.', img: '/img/profile-bigwins.svg' },
-]
+import React from "react";
 
 export default function ProfileSelect() {
+  const go = (p: any, ctx?: any) => (window as any).NAV?.(p, ctx);
+
   return (
-    <div className="grid cols-2">
-      <div className="hero">
-        <div>
-          <h2>Select your profile</h2>
-          <p className="muted">These profiles adapt tone, offers, and shows.</p>
+    <div className="card">
+      <h2>Select Profile</h2>
+      <div className="grid cols-3" style={{marginTop:12}}>
+        <div className="card">
+          <h3>Operations</h3>
+          <button className="btn primary" onClick={()=>go("dashboard")}>Open Ops</button>
         </div>
-        <img src="/img/hero-placeholder.svg" alt="Hero" style={{width:160}} />
+        <div className="card">
+          <h3>CTO</h3>
+          <button className="btn" onClick={()=>go("cto")}>Open CTO</button>
+        </div>
+        <div className="card">
+          <h3>Customer Care</h3>
+          <button className="btn" onClick={()=>go("cc")}>Open CC</button>
+        </div>
+        <div className="card">
+          <h3>Marketing</h3>
+          <button className="btn" onClick={()=>go("mm")}>Open Marketing</button>
+        </div>
+        <div className="card">
+          <h3>CRM</h3>
+          <button className="btn" onClick={()=>go("crm")}>Open CRM</button>
+        </div>
+        <div className="card">
+          <h3>Content</h3>
+          <button className="btn" onClick={()=>go("content")}>Open Content</button>
+        </div>
+        <div className="card">
+          <h3>CMS</h3>
+          <button className="btn" onClick={()=>go("cms")}>Open CMS</button>
+        </div>
+        <div className="card">
+          <h3>CRO</h3>
+          <button className="btn" onClick={()=>go("cro")}>Open CRO</button>
+        </div>
+        <div className="card">
+          <h3>PAAM</h3>
+          <button className="btn" onClick={()=>go("paam")}>Open PAAM</button>
+        </div>
       </div>
-      <div className="card">
-        <div className="grid cols-2">
-          {cards.map(c => (
-            <div className="card" key={c.key}>
-              <img src={c.img} alt={c.key} style={{width:'100%', height:120, objectFit:'cover', borderRadius:10}} />
-              <h3>{c.key}</h3>
-              <p className="muted" style={{marginTop:4}}>{c.tagline}</p>
-              <button className="btn primary" style={{marginTop:8}}>Choose</button>
-            </div>
-          ))}
+
+      <h3 style={{marginTop:16}}>Player Views</h3>
+      <div className="grid cols-3" style={{marginTop:8}}>
+        <div className="card">
+          <h4>Tezz</h4>
+          <button className="btn" onClick={()=>go("tezz")}>Open Tezz</button>
+        </div>
+        <div className="card">
+          <h4>Saanp Seedhi</h4>
+          <button className="btn" onClick={()=>go("saanp")}>Open Saanp</button>
+        </div>
+        <div className="card">
+          <h4>Tickets & Wallet</h4>
+          <div style={{display:"flex", gap:8, marginTop:6}}>
+            <button className="btn" onClick={()=>go("tickets")}>Tickets</button>
+            <button className="btn" onClick={()=>go("deposit")}>Deposit</button>
+            <button className="btn" onClick={()=>go("account")}>My Account</button>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,37 +1,43 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 
-function Board() {
-  const cells = []
-  for (let row = 9; row >= 0; row--) {
-    const rowCells = []
-    for (let col = 0; col < 10; col++) {
-      const base = row * 10
-      const num = row % 2 === 0 ? base + col + 1 : base + (10 - col)
-      rowCells.push(<div key={num} className="cell">{num}</div>)
-    }
-    cells.push(...rowCells)
-  }
-  return <div className="board">{cells}</div>
-}
+type Show = { id:string; name:string; gameType:string; startAt:string; durationMin:number; ticketPrice:number; prizePool:number; host:string; status:string; bannerAsset?:string };
 
 export default function SaanpSeedhi() {
+  const [shows, setShows] = useState<Show[]>([]);
+  const [err, setErr] = useState("");
+
+  const load = async () => {
+    setErr("");
+    const sh = await fetch("/api/content/shows").then(r=>r.json());
+    setShows((sh.shows||[]).filter((s:Show)=>s.gameType==="saanp"));
+  };
+
+  useEffect(()=>{ load().catch(()=>setErr("Load failed")); }, []);
+
   return (
     <div className="grid cols-2">
-      <div className="card">
-        <h2>Saanp Seedhi – Board (Veer Shergill)</h2>
-        <p className="muted">Admin light: suave, platinum-board vibe. Placeholder board below.</p>
-        <Board />
-      </div>
-      <div className="card">
-        <h3>Config (Admin)</h3>
-        <div className="grid cols-2">
-          <label className="muted">Enable Q rounds <input type="checkbox" defaultChecked /></label>
-          <label className="muted">Jackpot Mode <input type="checkbox" /></label>
-          <label className="muted">Tickets per round <input type="number" defaultValue={100} /></label>
-          <label className="muted">Host <select defaultValue="Motabhai"><option>Motabhai</option><option>Rani</option><option>Avi</option></select></label>
+      <div className="card" style={{gridColumn:"1 / -1"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <h2>Saanp Seedhi — Schedule</h2>
+          <div style={{display:"flex", gap:8}}>
+            <button className="btn" onClick={()=> (window as any).NAV?.("tickets")}>Buy Tickets</button>
+            <button className="btn" onClick={load}>↻ Refresh</button>
+          </div>
         </div>
-        <button className="btn primary" style={{marginTop:12}}>Save</button>
+        {err && <div className="muted" style={{color:"#ef4444"}}>{err}</div>}
+      </div>
+
+      <div className="card" style={{gridColumn:"1 / -1"}}>
+        <h3>Upcoming Shows</h3>
+        <ul className="muted" style={{marginTop:8}}>
+          {shows.map(s=>(
+            <li key={s.id}>
+              <strong>{s.name}</strong> · {new Date(s.startAt).toLocaleString()} · ₹{s.ticketPrice} · Prize ₹{s.prizePool.toLocaleString("en-IN")}
+            </li>
+          ))}
+          {!shows.length && <li className="muted">No scheduled Saanp Seedhi shows.</li>}
+        </ul>
       </div>
     </div>
-  )
+  );
 }

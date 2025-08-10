@@ -1,0 +1,16 @@
+{
+  "segmint.profiles.v1": {
+    "profiles": {
+      "Relaxed": {"tagline":"Play easy, win breezy!","themes":["low_pressure","bonuses","mellow_copy"]},
+      "Main Acts": {"tagline":"Every round’s a performance!","themes":["avatar_glam","callouts","spotlight"]},
+      "Gamesey": {"tagline":"Win with wits, not just luck.","themes":["skill","trivia","strategy"]},
+      "BIG Wins": {"tagline":"Big risk. Bigger rewards.","themes":["jackpots","fast_games","risky_copy"]}
+    },
+    "rules": [
+      {"if":{"avg_session_mins":{">=":25},"showagent_fan":"Rani"},"then":"Main Acts"},
+      {"if":{"nanogames_played":{">=":3}},"then":"Gamesey"},
+      {"if":{"jackpot_click_rate":{">=":0.15}},"then":"BIG Wins"},
+      {"if":{"none":true},"then":"Relaxed"}
+    ]
+  }
+}
