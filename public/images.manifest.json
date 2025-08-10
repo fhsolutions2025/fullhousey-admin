@@ -1,0 +1,84 @@
+{
+  "schema": "fhs.images.manifest.v1",
+  "logo": {
+    "path": "img/logo/logo-mark-512.webp",
+    "alt": "FullHousey logo mark"
+  },
+  "avatars": [
+    {
+      "name": "Veer Shergill",
+      "initials": "VS",
+      "path": "img/avatars/agent-vs.webp",
+      "alt": "Veer Shergill avatar"
+    },
+    {
+      "name": "Arjun Patil",
+      "initials": "AP",
+      "path": "img/avatars/agent-ap.webp",
+      "alt": "Arjun Patil avatar"
+    },
+    {
+      "name": "Raja Bhaiya",
+      "initials": "RB",
+      "path": "img/avatars/agent-rb.webp",
+      "alt": "Raja Bhaiya avatar"
+    },
+    {
+      "name": "Rani",
+      "initials": "RN",
+      "path": "img/avatars/agent-rn.webp",
+      "alt": "Rani avatar"
+    },
+    {
+      "name": "Avi",
+      "initials": "AV",
+      "path": "img/avatars/agent-av.webp",
+      "alt": "Avi avatar"
+    },
+    {
+      "name": "Laadli",
+      "initials": "LD",
+      "path": "img/avatars/agent-ld.webp",
+      "alt": "Laadli avatar"
+    },
+    {
+      "name": "Neel",
+      "initials": "NL",
+      "path": "img/avatars/agent-nl.webp",
+      "alt": "Neel avatar"
+    },
+    {
+      "name": "Pindii",
+      "initials": "PD",
+      "path": "img/avatars/agent-pd.webp",
+      "alt": "Pindii avatar"
+    }
+  ],
+  "shows": [
+    {
+      "title": "Ludo",
+      "path": "img/shows/show-ludo.png",
+      "alt": "Ludo show thumbnail"
+    },
+    {
+      "title": "Saanp Seedhi",
+      "path": "img/shows/show-saanpseedhi.png",
+      "alt": "Saanp Seedhi show thumbnail"
+    },
+    {
+      "title": "Jaldi5",
+      "path": "img/shows/show-jaldi5.png",
+      "alt": "Jaldi5 show thumbnail"
+    }
+  ],
+  "og": [
+    {
+      "name": "og-default",
+      "path": "og/og-default.png"
+    },
+    {
+      "name": "og-admin",
+      "path": "og/og-admin.png"
+    }
+  ]
+}

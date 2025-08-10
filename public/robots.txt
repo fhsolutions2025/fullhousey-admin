@@ -1,2 +1,7 @@
 User-agent: *
-Disallow: /
+Disallow: /agent-console
+Disallow: /cc
+Disallow: /hod/
+Disallow: /reports
+
+Sitemap: https://fullhousey-admin.vercel.app/sitemap.xml

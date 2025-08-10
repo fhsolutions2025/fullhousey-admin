@@ -1,0 +1,25 @@
+{
+  "schema": "fhs.seo.v1",
+  "pages": {
+    "/": {
+      "title": "FullHousey Admin",
+      "description": "Command Center for shows, agents, and reports.",
+      "robots": "noindex,nofollow"
+    },
+    "/agent-console": {
+      "title": "Agent Console",
+      "description": "Manage ShowAgents, policies, and schedules.",
+      "robots": "noindex,nofollow"
+    },
+    "/reports": {
+      "title": "Reports Vault",
+      "description": "Daily snapshots, MIS, and archives.",
+      "robots": "noindex,nofollow"
+    },
+    "/cc": {
+      "title": "Command Center",
+      "description": "Executive overview across risk, finance, and content.",
+      "robots": "noindex,nofollow"
+    }
+  }
+}
