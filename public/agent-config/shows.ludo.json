@@ -1,0 +1,12 @@
+{
+  "shows.ludo.v1": {
+    "format": {"round_mins":30,"players":4,"nano_games":["tap2win","trivia10"]},
+    "hosts": {
+      "weekday":{"lead":"Dhruv","support":"Riya"},
+      "weekend":{"lead":"Rani","support":null}
+    },
+    "slotsIST": {"mon_fri":["19:00-20:00"], "sat_sun":["20:00-22:00"]},
+    "fallbacks": ["Kamleshbhai","JJ"],
+    "barc_linked": true
+  }
+}

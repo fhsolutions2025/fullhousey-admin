@@ -1,0 +1,12 @@
+{
+  "agent.kpis.v1": {
+    "metrics": [
+      {"key":"digi_salary_burn","label":"Digi-Salary Burn","unit":"₹/show|month","source":"tts_stream_cost"},
+      {"key":"effort_index","label":"Effort Index","unit":"% of active shows","formula":"shows_participated/total_shows"},
+      {"key":"engagement_roi","label":"Engagement ROI","unit":"index","inputs":["completion_rate","cta_success","chat_density"]},
+      {"key":"emotion_load","label":"Emotion Load Index","unit":"index","inputs":["emotion_modulation_time","variance_db"]},
+      {"key":"expense_to_impact","label":"Expense→Impact","unit":"ratio","formula":"costs/impact(ngr,ftd,churn)"}
+    ],
+    "badges": ["Sick Leave","Appraisal Due","Break Suggestion","Exit Interview"]
+  }
+}

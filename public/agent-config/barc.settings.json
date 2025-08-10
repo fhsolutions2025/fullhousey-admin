@@ -1,0 +1,13 @@
+{
+  "barc.settings.v1": {
+    "enabled": true,
+    "ingest_cron": "0 8 * * MON",
+    "timezone": "Asia/Kolkata",
+    "source": "${BARC_FEED_URL}",
+    "slot_hints": {
+      "family_prime":["19:00-21:00"],
+      "youth_late":["21:00-23:00"]
+    },
+    "mapping": {"Ludo":"family_prime"}
+  }
+}

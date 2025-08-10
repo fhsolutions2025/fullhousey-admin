@@ -1,0 +1,13 @@
+{
+  "scheduler.v1": {
+    "timezone":"Asia/Kolkata",
+    "weekly": {
+      "mon_fri": [{"slot":"19:00-20:00","lead":"Dhruv","support":"Riya"}],
+      "sat_sun": [{"slot":"20:00-22:00","lead":"Rani"}]
+    },
+    "fallback_policy": {
+      "triggers":["api_error","overload","sick_leave"],
+      "order":["Kamleshbhai","JJ","Mummysee"]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "cc.ipmap.v1": {
+    "show_ips": [
+      {"show":"Ludo","format_id":"ludo.v1","host_pool":["Dhruv","Riya","Rani"]},
+      {"show":"Jaldi5","format_id":"jaldi5.v2","host_pool":["Riya","Anjali"]}
+    ],
+    "network_ips": [
+      {"name":"vercel_domain","value":"fullhousey-admin.vercel.app"},
+      {"name":"vercel_builds","value":"+154 deployments"},
+      {"name":"railway_mongo_url","value":"(set after provision)"},
+      {"name":"mongo_atlas_cluster","value":"(if used)"},
+      {"name":"cf2_storage","value":"(if used)"},
+      {"name":"ga_property_id","value":"${VITE_GA_MEASUREMENT_ID}"},
+      {"name":"gtm_container_id","value":"${VITE_GTM_CONTAINER_ID}"}
+    ]
+  }
+}

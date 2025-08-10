@@ -1,0 +1,8 @@
+{
+  "gtm.bridge.schema.v1": {
+    "topics": ["user_event","show_event","payment_event"],
+    "user_event": {"required":["user_id","type","ts"],"examples":["login","ticket_buy","exit"]},
+    "show_event": {"required":["show_id","agent","phase","ts"],"examples":["intro","round_start","round_end"]},
+    "payment_event": {"required":["user_id","amount","channel","ts"],"examples":["upi","card","netbanking"]}
+  }
+}

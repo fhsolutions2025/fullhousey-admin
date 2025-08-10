@@ -1,0 +1,10 @@
+{
+  "observers.v1": {
+    "ga4": {"enabled": true, "property_id": "${VITE_GA_MEASUREMENT_ID}"},
+    "youtube": {"enabled": true, "api_key": "${YOUTUBE_API_KEY}", "channel_ids": []},
+    "x_twitter": {"enabled": true, "bearer": "${X_BEARER_TOKEN}", "handles": []},
+    "instagram": {"enabled": true, "business_id": "${IG_BUSINESS_ID}"},
+    "facebook": {"enabled": true, "app_token": "${FB_APP_ACCESS_TOKEN}"},
+    "spotify": {"enabled": false, "client_id": "${SPOTIFY_CLIENT_ID}"}
+  }
+}
