@@ -1,19 +1,29 @@
-const BASE = (import.meta as any).env?.VITE_API_URL || ''
+/* src/lib/api.ts */
+export type CreateBuddyResponse = {
+  id: string;
+  status: "CREATED" | "RUNNING" | "DONE" | "FAILED" | "DELETED";
+  profile?: any | null;
+};
 
-function withAuth(init?: RequestInit): RequestInit {
-  const token = localStorage.getItem('fh_token')
-  const headers = new Headers(init?.headers || {})
-  if (token) headers.set('Authorization', `Bearer ${token}`)
-  // If there's a body and no content-type set, default to JSON
-  if (init?.body && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json')
-  }
-  return { ...init, headers }
+const BASE = import.meta.env.VITE_API_BASE || "";
+
+export async function hbCreate(audioFile: File, nameHint?: string): Promise<CreateBuddyResponse> {
+  const fd = new FormData();
+  fd.append("audio", audioFile);
+  if (nameHint) fd.append("nameHint", nameHint);
+  const r = await fetch(`${BASE}/api/houseybuddy/create`, { method: "POST", body: fd });
+  if (!r.ok) throw new Error(`hbCreate failed: ${r.status}`);
+  return r.json();
 }
 
-export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = BASE ? `${BASE}${path}` : path
-  const res = await fetch(url, withAuth(init))
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
-  return res.json() as Promise<T>
+export async function hbStatus(id: string) {
+  const r = await fetch(`${BASE}/api/houseybuddy/${id}/status`);
+  if (!r.ok) throw new Error(`hbStatus failed: ${r.status}`);
+  return r.json();
+}
+
+export async function hbProfile(id: string) {
+  const r = await fetch(`${BASE}/api/houseybuddy/${id}/profile`);
+  if (!r.ok) throw new Error(`hbProfile failed: ${r.status}`);
+  return r.json();
 }

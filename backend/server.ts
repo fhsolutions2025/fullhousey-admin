@@ -1,26 +1,34 @@
-import express from 'express'
-import cors from 'cors'
+/* backend/server.ts */
+import express from "express";
+import cors from "cors";
+import fileUpload from "express-fileupload";
+import path from "path";
+import houseyBuddyRouter from "./routes/houseybuddy";
 
-import agentsApi from './api/agents.js'
-import paymentsApi from './api/payments.js'
-import systemApi from './api/system.js'
-import authApi from './api/auth.js'
+const app = express();
+const PORT = process.env.PORT ? Number(process.env.PORT) : 8080;
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: path.join(process.cwd(), "tmp"),
+    createParentPath: true,
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  })
+);
 
-// Auth first (login/logout)
-app.use('/api/auth', authApi)
+// Health
+app.get("/api/health", (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
-// Business APIs
-app.use('/api/agents', agentsApi)
-app.use('/api/payments', paymentsApi)
+// HouseyBuddy v0.1
+app.use("/api/houseybuddy", houseyBuddyRouter);
 
-// System/meta (health, info, version, config, dev tools)
-app.use('/api', systemApi)
+// Static (optional)
+app.use("/public", express.static(path.join(process.cwd(), "public")));
 
-const PORT = process.env.PORT || 4000
 app.listen(PORT, () => {
-  console.log(`Backend running at http://localhost:${PORT}`)
-})
+  console.log(`[server] listening on :${PORT}`);
+});
