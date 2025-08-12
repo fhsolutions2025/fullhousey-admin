@@ -1,7 +1,9 @@
 /* src/lib/api.ts */
+export type JobStatus = "CREATED" | "RUNNING" | "DONE" | "FAILED" | "DELETED";
+
 export type CreateBuddyResponse = {
   id: string;
-  status: "CREATED" | "RUNNING" | "DONE" | "FAILED" | "DELETED";
+  status: JobStatus;
   profile?: any | null;
 };
 
@@ -25,5 +27,21 @@ export async function hbStatus(id: string) {
 export async function hbProfile(id: string) {
   const r = await fetch(`${BASE}/api/houseybuddy/${id}/profile`);
   if (!r.ok) throw new Error(`hbProfile failed: ${r.status}`);
+  return r.json();
+}
+
+export async function hbCost(id: string) {
+  const r = await fetch(`${BASE}/api/houseybuddy/${id}/cost`);
+  if (!r.ok) throw new Error(`hbCost failed: ${r.status}`);
+  return r.json();
+}
+
+export function hbAvatarUrl(id: string) {
+  return `${BASE}/api/houseybuddy/${id}/avatar`;
+}
+
+export async function hbReadiness() {
+  const r = await fetch(`${BASE}/api/houseybuddy/readiness/check`);
+  if (!r.ok) throw new Error(`hbReadiness failed: ${r.status}`);
   return r.json();
 }
