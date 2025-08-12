@@ -3,20 +3,19 @@ import { Router } from "express";
 import { z } from "zod";
 import path from "path";
 import fs from "fs/promises";
+import fss from "fs";
 import { saveUploadTemp } from "../utils/storage";
 import {
   createJob,
   getJob,
   updateJob,
   JobStatus,
-  type HouseyJob,
 } from "../store/jobs";
 import { runPipeline } from "../services/houseybuddy/pipeline";
 
 const router = Router();
 
 const CreateSchema = z.object({
-  // Optional explicit name text; if omitted, STT will derive name from audio
   nameHint: z.string().min(1).max(120).optional(),
 });
 
@@ -34,10 +33,7 @@ router.post("/create", async (req: any, res) => {
       audioPath: tmpPath,
     });
 
-    // fire and forget (no background promises here—just immediate pipeline run)
-    // We run synchronously until stubs complete (keeps behavior predictable).
     await runPipeline(job.id);
-
     const final = await getJob(job.id);
     return res.json({ id: job.id, status: final?.status, profile: final?.result?.profile ?? null });
   } catch (err: any) {
@@ -56,16 +52,25 @@ router.get("/:id/profile", async (req, res) => {
   const job = await getJob(req.params.id);
   if (!job) return res.status(404).json({ error: "job not found" });
   if (job.status !== JobStatus.DONE) return res.status(409).json({ error: "not ready" });
-
-  // Return the compiled profile (life story index + avatar + runtime config)
   return res.json(job.result?.profile ?? {});
+});
+
+// NEW: avatar preview
+router.get("/:id/avatar", async (req, res) => {
+  const job = await getJob(req.params.id);
+  if (!job || job.status !== JobStatus.DONE || !job.result?.profile?.avatar?.imagePath) {
+    return res.status(404).json({ error: "avatar not found" });
+  }
+  const p = job.result.profile.avatar.imagePath as string;
+  if (!fss.existsSync(p)) return res.status(404).json({ error: "avatar missing" });
+  res.setHeader("Content-Type", "image/png");
+  fss.createReadStream(p).pipe(res);
 });
 
 router.delete("/:id", async (req, res) => {
   const job = await getJob(req.params.id);
   if (!job) return res.status(404).json({ error: "job not found" });
 
-  // Soft delete: mark removed and nuke temp files
   await updateJob(job.id, { status: JobStatus.DELETED });
   if (job.audioPath) {
     try { await fs.unlink(job.audioPath); } catch {}
