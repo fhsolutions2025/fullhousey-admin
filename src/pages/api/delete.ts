@@ -11,7 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { id } = req.query;
     const client = await clientPromise;
     const db = client.db('fullhousey');
+
     await db.collection('rgs').deleteOne({ _id: new ObjectId(id as string) });
+
     res.status(200).json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete rule' });
