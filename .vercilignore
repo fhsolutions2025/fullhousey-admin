@@ -1,0 +1,7 @@
+.git
+node_modules
+.vscode
+test-zap
+buildbot-test.tx
+*.test.tsx
+*.test.ts
