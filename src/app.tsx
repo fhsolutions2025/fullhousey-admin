@@ -1,11 +1,12 @@
-import { Suspense } from "react";
-import AppRouter from "./router";
+import React from 'react';
 
-/** Thin app wrapper. Router mounts Layout and all routes. */
-export default function App() {
+function App() {
   return (
-    <Suspense fallback={<div style={{ padding: 24, color: "#9CA3AF" }}>Loading…</div>}>
-      <AppRouter />
-    </Suspense>
+    <div style={{ fontFamily: 'sans-serif', padding: 40 }}>
+      <h1>Welcome to FullHousey</h1>
+      <p>This is your staging site, running on Vercel with Vite.</p>
+    </div>
   );
 }
+
+export default App;
